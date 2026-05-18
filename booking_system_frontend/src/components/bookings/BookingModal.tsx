@@ -12,11 +12,13 @@ import {
   Timer,
   Zap,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency, formatDate, calculateDuration } from '../../utils/formatters';
 import { createQuote, createHold, confirmHold, releaseHold } from '../../services/api';
 import { storeHold, removeHold } from '../../utils/holdStorage';
 import { useUser } from '../../hooks/useUser';
 import toast from 'react-hot-toast';
+import { SeatClassComparison } from './SeatClassComparison';
 
 type Step = 'select' | 'quote' | 'hold';
 
@@ -35,6 +37,7 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
   const [quote, setQuote] = useState<Quote | null>(null);
   const [hold, setHold] = useState<Hold | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [showComparison, setShowComparison] = useState(false);
 
   // Reset state when modal opens
   useEffect(() => {
@@ -70,10 +73,18 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
       price: flight.economy_price,
       seats: flight.economy_seats_available,
       icon: Plane,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-500/10',
-      borderColor: 'border-blue-500/30',
-      features: ['Standard seating', 'In-flight entertainment', 'Complimentary snacks'],
+      color: 'text-economy-blue',
+      bgColor: 'bg-economy-blue/10',
+      bgGradient: 'bg-economy-gradient',
+      borderColor: 'border-economy-blue',
+      glowClass: 'economy-glow',
+      features: [
+        'Standard seating with adjustable headrest',
+        'In-flight entertainment system',
+        'Complimentary snacks and beverages',
+        'Personal reading light',
+        'USB charging port'
+      ],
     },
     {
       name: 'Business',
@@ -81,10 +92,20 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
       price: flight.business_price,
       seats: flight.business_seats_available,
       icon: Crown,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-500/10',
-      borderColor: 'border-purple-500/30',
-      features: ['Premium seating', 'Priority boarding', 'Gourmet meals', 'Extra legroom'],
+      color: 'text-business-purple',
+      bgColor: 'bg-business-purple/10',
+      bgGradient: 'bg-business-gradient',
+      borderColor: 'border-business-purple',
+      glowClass: 'business-glow',
+      features: [
+        'Premium reclining seats with extra legroom',
+        'Priority boarding and baggage handling',
+        'Gourmet meal service with wine selection',
+        'Noise-canceling headphones',
+        'Premium entertainment system',
+        'Dedicated overhead storage',
+        'Power outlets and USB-C ports'
+      ],
     },
     {
       name: 'Galaxium Class',
@@ -92,10 +113,22 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
       price: flight.galaxium_price,
       seats: flight.galaxium_seats_available,
       icon: Rocket,
-      color: 'text-alien-green',
-      bgColor: 'bg-alien-green/10',
-      borderColor: 'border-alien-green/30',
-      features: ['Luxury pods', 'VIP lounge access', 'Personal concierge', 'Zero-G experience'],
+      color: 'text-galaxium-green',
+      bgColor: 'bg-galaxium-green/10',
+      bgGradient: 'bg-galaxium-gradient',
+      borderColor: 'border-galaxium-green',
+      glowClass: 'galaxium-glow',
+      features: [
+        'Luxury private pods with lie-flat beds',
+        'VIP lounge access with spa services',
+        'Personal concierge service',
+        'Chef-prepared multi-course dining',
+        'Premium champagne and spirits',
+        'Zero-gravity experience chamber access',
+        'Virtual reality entertainment suite',
+        'Priority everything (boarding, baggage, customs)',
+        'Complimentary ground transportation'
+      ],
     },
   ];
 
@@ -242,73 +275,175 @@ export const BookingModal = ({ isOpen, onClose, flight, onSuccess }: BookingModa
   };
 
   // Step 1: Seat class selection
-  const renderSelectStep = () => (
-    <div className="space-y-6">
-      {flightSummary}
+  const renderSelectStep = () => {
+    // Icon-specific animations
+    const getIconAnimation = (seatClass: SeatClass) => {
+      if (seatClass === 'economy') {
+        return {
+          whileHover: {
+            rotate: [0, -5, 5, -5, 0],
+            transition: { duration: 0.5 }
+          }
+        };
+      } else if (seatClass === 'business') {
+        return {
+          whileHover: {
+            y: [-2, -6, -2],
+            transition: {
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }
+          }
+        };
+      } else if (seatClass === 'galaxium') {
+        return {
+          whileHover: {
+            y: [0, -10],
+            scale: [1, 1.1],
+            transition: { duration: 0.3 }
+          }
+        };
+      }
+      return {};
+    };
 
-      <div>
-        <h4 className="text-sm font-semibold text-star-white mb-3">Select Seat Class</h4>
-        <div className="space-y-3">
-          {seatClasses.map((sc) => {
-            const Icon = sc.icon;
-            const isSelected = selectedClass === sc.class;
-            const isSoldOut = sc.seats === 0;
+    return (
+      <AnimatePresence mode="wait">
+        {showComparison ? (
+          <SeatClassComparison
+            flight={flight}
+            onSelect={(seatClass) => {
+              setSelectedClass(seatClass);
+              setShowComparison(false);
+            }}
+            onClose={() => setShowComparison(false)}
+          />
+        ) : (
+          <div className="space-y-6">
+            {flightSummary}
 
-            return (
-              <button
-                key={sc.class}
-                onClick={() => !isSoldOut && setSelectedClass(sc.class)}
-                disabled={isSoldOut}
-                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                  isSelected
-                    ? `${sc.borderColor} ${sc.bgColor}`
-                    : 'border-white/10 bg-white/5 hover:border-white/20'
-                } ${isSoldOut ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Icon size={20} className={sc.color} />
-                    <span className="font-semibold text-star-white">{sc.name}</span>
-                    {isSelected && <Check size={18} className={sc.color} />}
-                  </div>
-                  <div className="text-right">
-                    <div className={`text-lg font-bold ${sc.color}`}>
-                      {formatCurrency(sc.price)}
+            <div>
+          <h4 className="text-sm font-semibold text-star-white mb-3">Select Seat Class</h4>
+          <div className="space-y-3">
+            {seatClasses.map((sc, index) => {
+              const Icon = sc.icon;
+              const isSelected = selectedClass === sc.class;
+              const isSoldOut = sc.seats === 0;
+              const isLowSeats = sc.seats <= 2 && sc.seats > 0;
+
+              return (
+                <motion.button
+                  key={sc.class}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  whileHover={!isSoldOut ? { scale: 1.01 } : {}}
+                  whileTap={!isSoldOut ? { scale: 0.99 } : {}}
+                  onClick={() => !isSoldOut && setSelectedClass(sc.class)}
+                  disabled={isSoldOut}
+                  className={`relative w-full p-4 rounded-lg border-2 transition-all duration-300 text-left ${
+                    isSelected
+                      ? `${sc.borderColor} ${sc.bgColor} ${sc.glowClass}`
+                      : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
+                  } ${isSoldOut ? 'opacity-50 cursor-not-allowed grayscale' : 'cursor-pointer'}`}
+                >
+                  {/* Premium badge for Galaxium */}
+                  {sc.class === 'galaxium' && !isSoldOut && (
+                    <div className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full bg-galaxium-gradient text-[10px] font-bold text-white shadow-lg animate-glow-pulse">
+                      PREMIUM
                     </div>
-                    <div className="text-xs text-star-white/60">
-                      {isSoldOut ? 'Sold Out' : `${sc.seats} left`}
+                  )}
+
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <motion.div {...getIconAnimation(sc.class)}>
+                        <Icon size={20} className={sc.color} />
+                      </motion.div>
+                      <span className="font-semibold text-star-white">{sc.name}</span>
+                      <AnimatePresence>
+                        {isSelected && (
+                          <motion.div
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            exit={{ scale: 0, rotate: 180 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 200,
+                              damping: 15
+                            }}
+                          >
+                            <Check size={18} className={sc.color} />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-lg font-bold ${sc.color}`}>
+                        {formatCurrency(sc.price)}
+                      </div>
+                      <div className={`text-xs ${isLowSeats ? 'text-solar-orange font-semibold' : 'text-star-white/60'}`}>
+                        {isSoldOut ? 'Sold Out' : `${sc.seats} left`}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <ul className="text-xs text-star-white/70 space-y-1">
-                  {sc.features.map((f, i) => (
-                    <li key={i}>• {f}</li>
-                  ))}
-                </ul>
-              </button>
-            );
-          })}
+                  
+                  <ul className="text-xs text-star-white/70 space-y-1">
+                    {sc.features.slice(0, 3).map((f, i) => (
+                      <li key={i}>• {f}</li>
+                    ))}
+                    {sc.features.length > 3 && (
+                      <li className="text-star-white/50 italic">+ {sc.features.length - 3} more features</li>
+                    )}
+                  </ul>
+                </motion.button>
+              );
+            })}
+          </div>
+          
+          {/* Compare Classes Button */}
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            onClick={() => setShowComparison(true)}
+            className="w-full py-2 px-4 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-star-white text-sm font-medium transition-all duration-200"
+          >
+            Compare All Classes →
+          </motion.button>
         </div>
-      </div>
 
-      {user && (
-        <div className="glass-card p-4 bg-white/5">
-          <h4 className="text-sm font-semibold text-star-white mb-2">Passenger</h4>
-          <p className="text-star-white">{user.name}</p>
-          <p className="text-star-white/60 text-sm">{user.email}</p>
-        </div>
-      )}
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="glass-card p-4 bg-white/5"
+          >
+            <h4 className="text-sm font-semibold text-star-white mb-2">Passenger</h4>
+            <p className="text-star-white">{user.name}</p>
+            <p className="text-star-white/60 text-sm">{user.email}</p>
+          </motion.div>
+        )}
 
-      <div className="flex gap-3">
-        <Button variant="secondary" onClick={onClose} disabled={isLoading} className="flex-1">
-          Cancel
-        </Button>
-        <Button onClick={handleGetQuote} isLoading={isLoading} className="flex-1">
-          Get Quote →
-        </Button>
-      </div>
-    </div>
-  );
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="flex gap-3"
+        >
+          <Button variant="secondary" onClick={onClose} disabled={isLoading} className="flex-1">
+            Cancel
+          </Button>
+          <Button onClick={handleGetQuote} isLoading={isLoading} className="flex-1">
+            Get Quote →
+          </Button>
+        </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      );
+    };
 
   // Step 2: Quote review
   const renderQuoteStep = () => {

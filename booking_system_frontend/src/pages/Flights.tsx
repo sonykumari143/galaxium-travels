@@ -39,8 +39,8 @@ export const Flights = () => {
       if (retryCount < MAX_RETRIES) {
         toast.error(`Failed to load flights. Retrying... (${retryCount + 1}/${MAX_RETRIES})`);
         console.warn(`Retry attempt ${retryCount + 1} after error:`, error);
-        
-        // Wait before retrying
+       
+        // Wait before retrying with exponential backoff
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1)));
         
         // Retry with incremented count

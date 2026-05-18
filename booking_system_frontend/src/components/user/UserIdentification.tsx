@@ -46,8 +46,59 @@ export const UserIdentification = ({ isOpen, onClose, onSuccess }: UserIdentific
         if (isErrorResponse(result)) {
           toast.error(result.details || result.error);
           return;
+        } 
+        
+        setUser(result);
+        toast.success('Account created successfully!');
+      } else {
+        // Login existing user
+        const result = await getUserByCredentials({ name: name.trim(), email: email.trim() });
+        
+        if (isErrorResponse(result)) {
+          toast.error(result.details || result.error);
+          return;
         }
         
+        setUser(result);
+        toast.success('Logged in successfully!');
+      }
+      
+      onSuccess();
+      onClose();
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+      console.error('Error in user identification:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title={isNewUser ? 'Create Account' : 'Log In'}>
+      <form onSubmit={handleSubmit}>
+        <Input
+          label="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter your name"
+          required
+        />
+        <Input
+          label="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+          required
+        />
+        <div style={{ marginTop: '1rem' }}>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Processing...' : isNewUser ? 'Create Account' : 'Log In'}
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
         setUser(result);
         toast.success('Account created successfully!');
         onSuccess();

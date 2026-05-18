@@ -20,9 +20,12 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
       price: flight.economy_price,
       seats: flight.economy_seats_available,
       icon: Plane,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-500/10',
-      borderColor: 'border-blue-500/30',
+      color: 'text-economy-blue',
+      bgColor: 'bg-economy-blue/10',
+      bgGradient: 'bg-economy-gradient',
+      borderColor: 'border-economy-blue/30',
+      glowClass: 'economy-glow-hover',
+      badge: null,
     },
     {
       name: 'Business',
@@ -30,9 +33,12 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
       price: flight.business_price,
       seats: flight.business_seats_available,
       icon: Crown,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-500/10',
-      borderColor: 'border-purple-500/30',
+      color: 'text-business-purple',
+      bgColor: 'bg-business-purple/10',
+      bgGradient: 'bg-business-gradient',
+      borderColor: 'border-business-purple/30',
+      glowClass: 'business-glow-hover',
+      badge: null,
     },
     {
       name: 'Galaxium Class',
@@ -40,9 +46,12 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
       price: flight.galaxium_price,
       seats: flight.galaxium_seats_available,
       icon: Rocket,
-      color: 'text-alien-green',
-      bgColor: 'bg-alien-green/10',
-      borderColor: 'border-alien-green/30',
+      color: 'text-galaxium-green',
+      bgColor: 'bg-galaxium-green/10',
+      bgGradient: 'bg-galaxium-gradient',
+      borderColor: 'border-galaxium-green/30',
+      glowClass: 'galaxium-glow-hover',
+      badge: 'PREMIUM',
     },
   ];
 
@@ -106,21 +115,77 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
           {/* Seat Classes */}
           <div className="space-y-2">
             <p className="text-xs text-star-white/60 mb-2">Available Seat Classes</p>
-            {seatClasses.map((seatClass) => {
+            {seatClasses.map((seatClass, index) => {
               const Icon = seatClass.icon;
               const isClassSoldOut = seatClass.seats === 0;
               const isLowSeats = seatClass.seats <= 2 && seatClass.seats > 0;
               
+              // Icon-specific animations
+              const getIconAnimation = () => {
+                if (seatClass.class === 'economy') {
+                  return {
+                    whileHover: {
+                      rotate: [0, -5, 5, -5, 0],
+                      transition: { duration: 0.5 }
+                    }
+                  };
+                } else if (seatClass.class === 'business') {
+                  return {
+                    whileHover: {
+                      y: [-2, -6, -2],
+                      transition: {
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }
+                    }
+                  };
+                } else if (seatClass.class === 'galaxium') {
+                  return {
+                    whileHover: {
+                      y: [0, -10],
+                      scale: [1, 1.1],
+                      transition: { duration: 0.3 }
+                    }
+                  };
+                }
+                return {};
+              };
+              
               return (
-                <div
+                <motion.div
                   key={seatClass.class}
-                  className={`p-3 rounded-lg border ${seatClass.borderColor} ${seatClass.bgColor} ${
-                    isClassSoldOut ? 'opacity-50' : ''
-                  }`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  whileHover={!isClassSoldOut ? {
+                    y: -2,
+                    scale: 1.01,
+                    transition: { duration: 0.2 }
+                  } : {}}
+                  className={`relative p-3 rounded-lg border ${seatClass.borderColor} ${seatClass.bgColor} ${
+                    isClassSoldOut ? 'opacity-50 grayscale' : seatClass.glowClass
+                  } transition-all duration-300`}
                 >
+                  {/* Badge for premium class */}
+                  {seatClass.badge && !isClassSoldOut && (
+                    <div className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full bg-galaxium-gradient text-[10px] font-bold text-white shadow-lg">
+                      {seatClass.badge}
+                    </div>
+                  )}
+                  
+                  {/* Sold Out Overlay */}
+                  {isClassSoldOut && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-space-dark/80 rounded-lg">
+                      <span className="text-sm font-bold text-red-400">SOLD OUT</span>
+                    </div>
+                  )}
+                  
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Icon size={18} className={seatClass.color} />
+                      <motion.div {...getIconAnimation()}>
+                        <Icon size={18} className={seatClass.color} />
+                      </motion.div>
                       <span className="font-medium text-star-white">{seatClass.name}</span>
                     </div>
                     <div className="text-right">
@@ -129,13 +194,13 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
                       </div>
                       <div className="flex items-center gap-1 text-xs">
                         <Users size={12} className={isLowSeats ? 'text-solar-orange' : 'text-star-white/60'} />
-                        <span className={isLowSeats ? 'text-solar-orange font-semibold' : 'text-star-white/60'}>
+                        <span className={isLowSeats ? 'text-solar-orange font-semibold animate-bounce-subtle' : 'text-star-white/60'}>
                           {isClassSoldOut ? 'Sold Out' : `${seatClass.seats} left`}
                         </span>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>

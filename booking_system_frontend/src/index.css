@@ -40,6 +40,63 @@
   }
 }
 
+@layer utilities {
+  /* Seat class specific glow utilities */
+  .economy-glow {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  
+  .economy-glow-hover:hover {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+  }
+  
+  .business-glow {
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
+  }
+  
+  .business-glow-hover:hover {
+    box-shadow: 0 0 35px rgba(139, 92, 246, 0.6);
+  }
+  
+  .galaxium-glow {
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+  }
+  
+  .galaxium-glow-hover:hover {
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.7);
+  }
+  
+  /* Shimmer effect for premium classes */
+  .shimmer-effect {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+  
+  /* Gradient border effect */
+  .gradient-border {
+    position: relative;
+    background-clip: padding-box;
+  }
+  
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: inherit;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 10px;
