@@ -52,7 +52,7 @@ export const UserIdentification = ({ isOpen, onClose, onSuccess }: UserIdentific
         toast.success('Account created successfully!');
       } else {
         // Login existing user
-        const result = await getUserByCredentials({ name: name.trim(), email: email.trim() });
+        const result = await getUserByCredentials(name.trim(), email.trim());
         
         if (isErrorResponse(result)) {
           toast.error(result.details || result.error);
@@ -68,59 +68,6 @@ export const UserIdentification = ({ isOpen, onClose, onSuccess }: UserIdentific
     } catch (error) {
       toast.error('An unexpected error occurred');
       console.error('Error in user identification:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isNewUser ? 'Create Account' : 'Log In'}>
-      <form onSubmit={handleSubmit}>
-        <Input
-          label="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Enter your name"
-          required
-        />
-        <Input
-          label="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
-          required
-        />
-        <div style={{ marginTop: '1rem' }}>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Processing...' : isNewUser ? 'Create Account' : 'Log In'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
-  );
-};
-        setUser(result);
-        toast.success('Account created successfully!');
-        onSuccess();
-        onClose();
-      } else {
-        // Try to find existing user
-        const result = await getUserByCredentials(name.trim(), email.trim());
-        
-        if (isErrorResponse(result)) {
-          // User not found, suggest registration
-          toast.error('User not found. Please register or check your credentials.');
-          setIsNewUser(true);
-          return;
-        }
-        
-        setUser(result);
-        toast.success(`Welcome back, ${result.name}!`);
-        onSuccess();
-        onClose();
-      }
-    } catch (error: any) {
-      toast.error(error.details || error.error || 'An error occurred');
     } finally {
       setIsLoading(false);
     }

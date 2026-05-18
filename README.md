@@ -4,16 +4,18 @@ A complete full-stack application for booking interplanetary space travel, featu
 
 ## 🌟 Features
 
-- **Modern Space-Themed UI** - Beautiful, responsive interface with animated starfield
+- **Modern Space-Themed UI** - Beautiful, responsive interface with animated starfield and smooth transitions
 - **Full Booking System** - Browse flights, make bookings, manage reservations
 - **Three Seat Classes** - Economy, Business, and Galaxium Class with independent availability tracking
-- **Dynamic Pricing** - Class-based multipliers (1x, 2.5x, 5x) applied to base flight prices
+- **Enhanced Seat Class Selection** - Interactive comparison view with animated counters and visual feedback
+- **Dynamic Pricing** - Class-based multipliers (1x, 2.5x, 5x) applied to base flight prices with animated price transitions
 - **Dual Protocol Backend** - REST API and MCP (Model Context Protocol) support
 - **Type-Safe** - Full TypeScript frontend and Python type hints with strict validation
 - **Real-Time Updates** - Live seat availability per class and booking status
 - **User Management** - Simple name/email authentication
 - **Comprehensive Testing** - Full test coverage for services and REST endpoints
 - **Production Ready** - Optimized builds and comprehensive error handling
+- **Accessibility First** - WCAG AA compliant with keyboard navigation and screen reader support
 
 ## 🏗️ Architecture
 
@@ -28,6 +30,15 @@ galaxium-travels/
 ├── booking_system_frontend/    # React frontend (TypeScript)
 │   ├── src/
 │   │   ├── components/        # Reusable UI components
+│   │   │   ├── bookings/     # Booking-related components
+│   │   │   │   ├── BookingModal.tsx
+│   │   │   │   ├── SeatClassComparison.tsx  # NEW: Interactive comparison view
+│   │   │   │   └── ...
+│   │   │   ├── common/       # Shared components
+│   │   │   │   ├── AnimatedCounter.tsx      # NEW: Animated number transitions
+│   │   │   │   └── ...
+│   │   │   ├── flights/      # Flight display components
+│   │   │   └── ...
 │   │   ├── pages/            # Route pages
 │   │   ├── services/         # API integration
 │   │   └── types/            # TypeScript definitions
@@ -36,26 +47,28 @@ galaxium-travels/
 ├── booking_system_inventory_hold_service/ # Java hold service (Spring Boot)
 │   └── src/main/java/        # Java source code
 │
-├── docs/                      # 📚 All documentation
-│   ├── AWS-DEPLOYMENT.md     # AWS deployment guide
-│   ├── IBM-CLOUD-DEPLOYMENT.md # IBM Cloud guide
-│   └── ...                   # Other docs
+├── plans/                     # 📋 Feature planning documents
+│   ├── seat-class-ux-enhancement-overview.md
+│   ├── visual-design-specifications.md
+│   └── implementation-roadmap.md
 │
-├── scripts/                   # 🔧 Operational scripts
+├── deployment_scripts/        # 🔧 Operational scripts
 │   ├── aws/                  # AWS deployment scripts
 │   ├── ibm/                  # IBM Cloud scripts
-│   └── local/                # Local dev scripts
+│   ├── local/                # Local dev scripts
+│   └── terraform/            # Infrastructure as code
 │
-├── terraform/                 # Infrastructure as code
 ├── AGENTS.md                  # Critical patterns for AI agents
+├── DEMO_RUNBOOK.md           # Demo execution guide
 └── start.sh                   # Quick start script
 ```
 
 ### Key Documentation
 
 - **[AGENTS.md](AGENTS.md)** - Critical non-obvious patterns, testing specifics, and architectural constraints
-- **[docs/](docs/)** - All documentation (deployment guides, implementation ideas, etc.)
-- **[scripts/](scripts/)** - All operational scripts organized by deployment target
+- **[DEMO_RUNBOOK.md](DEMO_RUNBOOK.md)** - Step-by-step demo execution guide
+- **[plans/](plans/)** - Feature planning documents and implementation roadmaps
+- **[deployment_scripts/](deployment_scripts/)** - All operational scripts organized by deployment target
 
 ## 🚀 Quick Start
 
@@ -118,14 +131,16 @@ Once started, access:
 - **Java Service**: [booking_system_inventory_hold_service/README.md](booking_system_inventory_hold_service/README.md) - Hold service API and architecture
 
 ### Deployment Guides
-- **AWS**: [docs/AWS-DEPLOYMENT.md](docs/AWS-DEPLOYMENT.md) - Complete AWS ECS deployment guide
-- **IBM Cloud**: [docs/IBM-CLOUD-DEPLOYMENT.md](docs/IBM-CLOUD-DEPLOYMENT.md) - IBM Cloud Code Engine deployment
-- **Local**: [docs/QUICK_START.md](docs/QUICK_START.md) - Quick start guide for local development
+- **Local**: Use `./start.sh` for quick local development setup
+- **Docker**: `docker-compose up --build` for containerized deployment
+- **AWS**: See [deployment_scripts/aws/](deployment_scripts/aws/) for AWS ECS deployment
+- **IBM Cloud**: See [deployment_scripts/ibm/](deployment_scripts/ibm/) for IBM Cloud Code Engine deployment
 
 ### Additional Documentation
 - **[AGENTS.md](AGENTS.md)** - Critical patterns for AI agents working with this codebase
-- **[docs/](docs/)** - All other documentation (implementation ideas, migration plans, etc.)
-- **[scripts/](scripts/)** - Operational scripts organized by deployment target
+- **[DEMO_RUNBOOK.md](DEMO_RUNBOOK.md)** - Step-by-step guide for running demos
+- **[plans/](plans/)** - Feature planning documents and UX enhancement specifications
+- **[deployment_scripts/](deployment_scripts/)** - Operational scripts organized by deployment target
 
 ## 🎯 User Guide
 
@@ -133,14 +148,16 @@ Once started, access:
 
 1. **Browse Flights** - Navigate to the Flights page to see all available routes
 2. **View Seat Classes** - Each flight displays three classes with real-time availability:
-   - 🛫 **Economy** - Standard comfort (1x base price)
-   - 👑 **Business** - Premium experience (2.5x base price)
-   - 🚀 **Galaxium Class** - Ultimate luxury (5x base price)
-3. **Check Availability** - Each class shows available seats independently
-4. **Select Your Class** - Choose based on availability and budget
-5. **Sign In/Register** - Click "Book Now" and enter your name and email
-6. **Confirm Booking** - Review flight details, selected class, and final price
-7. **Manage Bookings** - View and cancel bookings from "My Bookings" page
+   - 🛫 **Economy** - Standard comfort (1x base price) - Blue theme
+   - 👑 **Business** - Premium experience (2.5x base price) - Purple theme
+   - 🚀 **Galaxium Class** - Ultimate luxury (5x base price) - Green theme
+3. **Interactive Selection** - Hover over classes to see enhanced visual effects and animations
+4. **Compare Classes** - Use the comparison view to see detailed feature breakdowns side-by-side
+5. **Check Availability** - Each class shows available seats independently with animated counters
+6. **Select Your Class** - Choose based on availability and budget with instant visual feedback
+7. **Sign In/Register** - Click "Book Now" and enter your name and email
+8. **Confirm Booking** - Review flight details, selected class, and animated final price
+9. **Manage Bookings** - View and cancel bookings from "My Bookings" page
 
 ### Demo Data
 
@@ -152,24 +169,33 @@ The system comes pre-seeded with:
 
 ## 💺 Seat Classes & Pricing
 
-Galaxium Travels offers three distinct seat classes for every flight:
+Galaxium Travels offers three distinct seat classes for every flight with enhanced visual design:
 
-| Class | Icon | Multiplier | Features | Seat Allocation |
-|-------|------|------------|----------|-----------------|
-| **Economy** | 🛫 | 1.0x | Standard seating, Basic amenities | 60% of seats |
-| **Business** | 👑 | 2.5x | Priority boarding, Extra legroom, Premium meals | 30% of seats |
-| **Galaxium** | 🚀 | 5.0x | Private pods, Zero-G lounge, Gourmet dining, Concierge | 10% of seats |
+| Class | Icon | Theme | Multiplier | Features | Seat Allocation |
+|-------|------|-------|------------|----------|-----------------|
+| **Economy** | 🛫 | Blue | 1.0x | Standard seating, In-flight entertainment, Snacks & beverages, USB charging | 60% of seats |
+| **Business** | 👑 | Purple | 2.5x | Premium reclining seats, Priority boarding, Gourmet meals, Noise-canceling headphones, Extra baggage | 30% of seats |
+| **Galaxium** | 🚀 | Green | 5.0x | Luxury pods with lie-flat beds, VIP lounge & spa, Personal concierge, Chef-prepared dining, Zero-G experience, Ground transportation | 10% of seats |
 
 ### Pricing Example
 For a flight with base price of $1,000,000:
-- Economy: $1,000,000
-- Business: $2,500,000
-- Galaxium Class: $5,000,000
+- Economy: $1,000,000 (Blue gradient theme)
+- Business: $2,500,000 (Purple gradient theme)
+- Galaxium Class: $5,000,000 (Green gradient theme with enhanced glow effects)
+
+### Enhanced UX Features
+- **Visual Identity** - Each class has distinct color gradients, icons, and hover effects
+- **Animated Counters** - Smooth number transitions when viewing prices and availability
+- **Interactive Comparison** - Side-by-side feature comparison table with checkmarks and highlights
+- **Hover Animations** - Icon-specific animations (plane tilt, crown float, rocket launch)
+- **Selection Feedback** - Animated checkmarks and border glow effects on selection
+- **Responsive Design** - Optimized layouts for desktop, tablet, and mobile devices
 
 ### Seat Availability
-- **Independent Tracking** - Each class has separate available/booked counters
+- **Independent Tracking** - Each class has separate available/booked counters with animated updates
 - **Real-Time Updates** - Availability updates immediately after booking/cancellation
-- **Sold Out Handling** - Classes show "Sold Out" when no seats remain, other classes stay bookable
+- **Sold Out Handling** - Classes show "Sold Out" with reduced opacity, other classes stay bookable
+- **Low Seat Warnings** - Visual indicators when seats are running low (≤2 remaining)
 - **Database Integrity** - Seat counters stored in Flight model, updated via service layer
 
 ## 🛠️ Technology Stack
@@ -249,7 +275,19 @@ Edit `booking_system_frontend/tailwind.config.js`:
 colors: {
   'cosmic-purple': '#6366F1',
   'nebula-pink': '#EC4899',
+  // Seat class colors
+  'economy-blue': '#3B82F6',
+  'business-purple': '#8B5CF6',
+  'galaxium-green': '#10B981',
   // Add your colors
+}
+```
+
+### Customize Seat Class Animations
+Edit `booking_system_frontend/src/index.css` for custom glow effects and animations:
+```css
+.economy-glow-hover:hover {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
 }
 ```
 

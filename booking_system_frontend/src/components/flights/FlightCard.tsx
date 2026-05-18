@@ -135,8 +135,7 @@ export const FlightCard = ({ flight, onBook }: FlightCardProps) => {
                       y: [-2, -6, -2],
                       transition: {
                         duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut"
+                        repeat: Infinity
                       }
                     }
                   };
